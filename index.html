@@ -198,18 +198,28 @@
     background: var(--code-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 20px;
+    padding: 36px 20px 20px 20px;
     overflow-x: auto;
+    overflow-y: visible;
     margin: 16px 0;
     position: relative;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+    tab-size: 4;
+    -webkit-overflow-scrolling: touch;
   }
   .code-block .lang {
     position: absolute;
-    top: 10px; right: 14px;
+    top: 10px;
+    right: 14px;
     font-size: 10px;
     color: var(--muted);
     letter-spacing: 1px;
     text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1;
+    display: block;
   }
   .kw  { color: #c792ea; }
   .fn  { color: #82aaff; }
@@ -266,6 +276,11 @@
     line-height: 2;
     color: var(--text);
     overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+    -webkit-overflow-scrolling: touch;
+    display: block;
   }
   .dt-q  { color: var(--yellow); font-weight: 600; }
   .dt-y  { color: var(--accent3); }
@@ -753,7 +768,8 @@
     </div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> norm
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> norm
 <span class="cm"># What % of passengers have age between 20 and 40?</span>
 mean_age = df[<span class="str">'Age'</span>].mean()   <span class="cm"># 29.1</span>
 std_age  = df[<span class="str">'Age'</span>].std()    <span class="cm"># 13.0</span>
@@ -789,7 +805,8 @@ prob = norm.cdf(<span class="num">40</span>, mean_age, std_age) - norm.cdf(<span
     <p style="font-size:13px;color:var(--muted)">n = total trials, k = desired successes, p = probability of success each trial</p>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> binom
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> binom
 
 <span class="cm"># Survival rate from Titanic = 38.4%</span>
 <span class="cm"># What's the probability exactly 4 out of 10 random passengers survive?</span>
@@ -833,7 +850,8 @@ p_atleast5 = <span class="num">1</span> - binom.cdf(k=<span class="num">4</span>
     <div class="formula">P(X = k) = (λ^k × e^-λ) ÷ k! &nbsp;&nbsp; where λ = average rate</div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> poisson
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> poisson
 
 <span class="cm"># Average 5 support tickets per hour (λ = 5)</span>
 <span class="cm"># What's the probability of getting exactly 8 tickets in 1 hour?</span>
@@ -1047,7 +1065,8 @@ p_overflow = <span class="num">1</span> - poisson.cdf(k=<span class="num">10</sp
 
     <p><strong style="color:var(--accent)">Method 1: Visual Check (Quick)</strong></p>
     <div class="code-block">
-<span class="lang">python</span><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="lang">python</span>
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
 <span class="kw">import</span> scipy.stats <span class="kw">as</span> stats
 
 <span class="cm"># Histogram + KDE — should look bell-shaped</span>
@@ -1062,7 +1081,8 @@ plt.show()</div>
 
     <p><strong style="color:var(--accent)">Method 2: Shapiro-Wilk Test (Statistical)</strong></p>
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> shapiro
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> shapiro
 
 <span class="cm"># H0: The data IS normally distributed</span>
 <span class="cm"># H1: The data is NOT normally distributed</span>
@@ -1163,7 +1183,8 @@ stat, p = shapiro(df[<span class="str">'Age'</span>])
     </div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> chi2_contingency
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> chi2_contingency
 
 <span class="cm"># ── Sex vs Survived ──────────────────────────────</span>
 ct = pd.crosstab(df[<span class="str">'Sex'</span>], df[<span class="str">'Survived'</span>])
@@ -1215,7 +1236,8 @@ chi2, p, dof, expected = chi2_contingency(ct)
     </div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> ttest_ind, ttest_1samp, ttest_rel
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> ttest_ind, ttest_1samp, ttest_rel
 
 <span class="cm"># ── Independent T-test: Age vs Survival ──────────</span>
 survived     = df[df[<span class="str">'Survived'</span>]==<span class="num">1</span>][<span class="str">'Age'</span>]
@@ -1264,7 +1286,8 @@ t, p = ttest_1samp(df[<span class="str">'Age'</span>], popmean=<span class="num"
     </div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> mannwhitneyu
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> mannwhitneyu
 
 <span class="cm"># ── Fare vs Survival (skewed data) ───────────────</span>
 fare_survived     = df[df[<span class="str">'Survived'</span>]==<span class="num">1</span>][<span class="str">'Fare'</span>]
@@ -1296,7 +1319,8 @@ u_stat, p = mannwhitneyu(fare_survived, fare_not_survived, alternative=<span cla
     </div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> f_oneway
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> f_oneway
 <span class="kw">from</span> statsmodels.stats.multicomp <span class="kw">import</span> pairwise_tukeyhsd
 
 <span class="cm"># ── ANOVA: Fare across Pclass ────────────────────</span>
@@ -1346,7 +1370,8 @@ h_stat, p = kruskal(c1, c2, c3)
     <div class="formula">Pearson r: strength AND direction of LINEAR relationship<br>Spearman ρ: strength of MONOTONIC relationship (as X goes up, Y goes up/down)</div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">from</span> scipy.stats <span class="kw">import</span> pearsonr, spearmanr
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> pearsonr, spearmanr
 
 <span class="cm"># ── Pearson: Age vs Survived ──────────────────────</span>
 r, p = pearsonr(df[<span class="str">'Age'</span>], df[<span class="str">'Survived'</span>])
@@ -1383,7 +1408,8 @@ rho, p = spearmanr(df[<span class="str">'Fare'</span>], df[<span class="str">'Su
     </div>
 
     <div class="code-block">
-<span class="lang">python</span><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="lang">python</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
 <span class="kw">from</span> scipy <span class="kw">import</span> stats
 
 <span class="kw">def</span> <span class="fn">confidence_interval</span>(data, confidence=<span class="num">0.95</span>):
@@ -1516,7 +1542,8 @@ mean, (low, high) = confidence_interval(df[df[<span class="str">'Survived'</span
   <div class="card reveal">
     <div class="card-title">📦 Complete Import Block <span class="tag tag-blue">COPY THIS</span></div>
     <div class="code-block">
-<span class="lang">python</span><span class="cm"># ── All imports you need for Phase 4 ─────────────</span>
+<span class="lang">python</span>
+<span class="cm"># ── All imports you need for Phase 4 ─────────────</span>
 <span class="kw">import</span> pandas <span class="kw">as</span> pd
 <span class="kw">import</span> numpy <span class="kw">as</span> np
 <span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
