@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DA Notes — Probability & Inferential Statistics</title>
+<title>DA Notes — Descriptive & Inferential Statistics</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700;900&display=swap');
 
@@ -416,6 +416,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent2));
     z-index: 999;
     transition: width 0.1s;
+    width: 0%;
   }
 
   .big-arrow { font-size: 24px; color: var(--muted); text-align: center; margin: 12px 0; }
@@ -441,11 +442,902 @@
   .cs-head { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
 
   .emoji-big { font-size: 2rem; }
+
+  /* ── TOGGLE BAR (new) ── */
+  .stat-toggle-bar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(5,8,16,0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-btn {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .toggle-btn:hover { color: var(--text); border-color: var(--accent); }
+  .toggle-btn.is-active-desc {
+    background: linear-gradient(135deg, #0a2a1e, #0a3a28);
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+  .toggle-btn.is-active-inf {
+    background: linear-gradient(135deg, #1a1040, #2a1550);
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* ── BOXPLOT VIZ (new, descriptive only) ── */
+  .boxplot-viz {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px 30px 24px;
+    margin: 16px 0;
+  }
+  .boxplot-track {
+    position: relative;
+    height: 70px;
+    margin: 0 10px;
+  }
+  .bp-line {
+    position: absolute;
+    top: 35px;
+    height: 2px;
+    background: var(--muted);
+  }
+  .bp-box {
+    position: absolute;
+    top: 12px;
+    height: 46px;
+    background: rgba(79,142,247,0.18);
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+  }
+  .bp-median {
+    position: absolute;
+    top: 12px;
+    height: 46px;
+    width: 2px;
+    background: var(--accent5);
+  }
+  .bp-whisker {
+    position: absolute;
+    top: 25px;
+    height: 20px;
+    width: 2px;
+    background: var(--muted);
+  }
+  .bp-cap {
+    position: absolute;
+    top: 25px;
+    width: 2px;
+    height: 20px;
+    background: var(--muted);
+  }
+  .bp-label {
+    position: absolute;
+    top: 62px;
+    font-size: 11px;
+    color: var(--muted);
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .bp-dot {
+    position: absolute;
+    top: 30px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    transform: translateX(-50%);
+  }
 </style>
 </head>
 <body>
 
 <div id="progress-bar"></div>
+
+<!-- TOGGLE BAR -->
+<div class="stat-toggle-bar">
+  <button id="btn-desc" class="toggle-btn is-active-desc" onclick="switchStatMode('desc')">📈 Descriptive Statistics</button>
+  <button id="btn-inf" class="toggle-btn" onclick="switchStatMode('inf')">🔬 Inferential Statistics</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- ============  DESCRIPTIVE STATISTICS ROOT  ============ -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="descriptive-root" class="stat-root">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">📈 Data Analysis Complete Notes</div>
+  <h1>Descriptive<br>Statistics</h1>
+  <p>Understand your data before you test it — every concept a DA professional must know to summarize, shape, and see a dataset.</p>
+  <div class="phase-pills">
+    <a href="#d-roadmap"    class="pill pill-blue">🗺 Roadmap</a>
+    <a href="#d-central"    class="pill pill-purple">🎯 Central Tendency</a>
+    <a href="#d-dispersion" class="pill pill-green">📏 Dispersion</a>
+    <a href="#d-shape"      class="pill pill-orange">📐 Shape</a>
+    <a href="#d-viz"        class="pill pill-pink">📊 Visualization</a>
+    <a href="#d-cheatsheet" class="pill pill-blue">📋 Cheat Sheet</a>
+  </div>
+</section>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <a href="#d-roadmap"     class="nav-item">Roadmap</a>
+  <a href="#d-central"     class="nav-item">Central Tendency</a>
+  <a href="#d-dispersion"  class="nav-item">Dispersion</a>
+  <a href="#d-shape"       class="nav-item">Shape</a>
+  <a href="#d-percentiles" class="nav-item">Percentiles</a>
+  <a href="#d-fivenum"     class="nav-item">5-Number Summary</a>
+  <a href="#d-viz"         class="nav-item">Visualization</a>
+  <a href="#d-correlation" class="nav-item">Correlation</a>
+  <a href="#d-outliers"    class="nav-item">Outliers</a>
+  <a href="#d-cheatsheet"  class="nav-item">Cheat Sheet</a>
+</nav>
+
+<!-- ══════════════ D0 — ROADMAP ══════════════ -->
+<section class="section" id="d-roadmap">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#0f1e3d;color:var(--accent)">0</div>
+    <div>
+      <div class="section-title">Your Learning Roadmap</div>
+      <div class="section-sub">What descriptive stats to learn, in what order, and why</div>
+    </div>
+  </div>
+
+  <div class="callout callout-yellow reveal">
+    <div class="callout-icon">💡</div>
+    <div><strong>The golden rule:</strong> Descriptive statistics summarize <em>what your data looks like</em> — no probability, no testing, just facts about the numbers in front of you. It's step one, always.</div>
+  </div>
+
+  <div class="flow reveal">
+    <div class="flow-step" style="border-color:var(--accent)">
+      <div class="step-num">Step 1</div>
+      <div style="color:var(--accent)">🎯 Central Tendency</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Where is the center?</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:var(--accent3)">
+      <div class="step-num">Step 2</div>
+      <div style="color:var(--accent3)">📏 Dispersion</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">How spread out?</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:var(--accent4)">
+      <div class="step-num">Step 3</div>
+      <div style="color:var(--accent4)">📐 Shape</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Skewed? Peaked?</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:var(--accent2)">
+      <div class="step-num">Step 4</div>
+      <div style="color:var(--accent2)">📊 Visualize</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">See it clearly</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color:var(--accent5)">
+      <div class="step-num">Outcome</div>
+      <div style="color:var(--accent5)">🔬 Ready to Infer</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Now test hypotheses</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📚 Priority Learning Order <span class="tag tag-green">FOLLOW THIS</span></div>
+    <table>
+      <tr><th>#</th><th>Concept</th><th>Why First?</th><th>Priority</th></tr>
+      <tr><td>1</td><td>Mean, Median, Mode</td><td>The single number that represents your data</td><td style="color:var(--red)">🔴 Must</td></tr>
+      <tr><td>2</td><td>Range, Variance, Std Dev</td><td>How spread out the data really is</td><td style="color:var(--red)">🔴 Must</td></tr>
+      <tr><td>3</td><td>Percentiles & Quartiles</td><td>Where a value stands relative to others</td><td style="color:var(--red)">🔴 Must</td></tr>
+      <tr><td>4</td><td>Five-Number Summary & IQR</td><td>Compact snapshot + outlier detection base</td><td style="color:var(--red)">🔴 Must</td></tr>
+      <tr><td>5</td><td>Skewness & Kurtosis</td><td>Decides which inferential test to use later</td><td style="color:var(--red)">🔴 Must</td></tr>
+      <tr><td>6</td><td>Frequency Distributions</td><td>Turns raw rows into a summary table</td><td style="color:var(--yellow)">🟡 Important</td></tr>
+      <tr><td>7</td><td>Histograms, Boxplots, Bar Charts</td><td>Seeing beats reading numbers</td><td style="color:var(--yellow)">🟡 Important</td></tr>
+      <tr><td>8</td><td>Covariance & Correlation</td><td>How two variables move together</td><td style="color:var(--yellow)">🟡 Important</td></tr>
+      <tr><td>9</td><td>Outlier Detection (IQR / Z-score)</td><td>Clean data before modeling</td><td style="color:var(--yellow)">🟡 Important</td></tr>
+      <tr><td>10</td><td>Coefficient of Variation</td><td>Compare spread across different units</td><td style="color:var(--accent3)">🟢 Good to know</td></tr>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D1 — CENTRAL TENDENCY ══════════════ -->
+<section class="section" id="d-central" style="background:linear-gradient(180deg,var(--bg) 0%, #0d1428 100%)">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#1a1040;color:var(--accent2)">1</div>
+    <div>
+      <div class="section-title" style="color:var(--accent2)">Measures of Central Tendency</div>
+      <div class="section-sub">One number to represent the whole dataset</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">➗ 1.1 — Mean (Average) <span class="tag tag-purple">MOST USED</span></div>
+    <p>The sum of all values divided by how many values there are.</p>
+    <div class="formula">Mean (μ or x̄) = (Σ x) ÷ n</div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        <strong>Titanic Example:</strong><br>
+        Mean Age = 29.7 years — the "typical" passenger age if everyone were averaged out.
+      </div>
+    </div>
+
+    <div class="callout callout-red">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Weakness:</strong> Mean is heavily pulled by outliers. Titanic Fare has a few passengers paying 500+ while most paid under 15 — the mean Fare (32.2) is much higher than what most people actually paid.</div>
+    </div>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].mean()   <span class="cm"># 29.7</span>
+df[<span class="str">'Fare'</span>].mean()  <span class="cm"># 32.2 — pulled up by expensive tickets</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🎯 1.2 — Median (Middle Value) <span class="tag tag-purple">ROBUST</span></div>
+    <p>The middle value when data is sorted. Half the values are below it, half above.</p>
+    <div class="formula">Odd n: middle value &nbsp;|&nbsp; Even n: average of the two middle values</div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        <strong>Titanic Example:</strong><br>
+        Median Fare = 14.45 — far lower than mean Fare (32.2). This gap itself tells you the data is skewed!
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-icon">✅</div>
+      <div><strong>Strength:</strong> Median is not affected by extreme outliers. Always check median alongside mean — a big gap between them is your first sign of skewness.</div>
+    </div>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].median()   <span class="cm"># 28.0</span>
+df[<span class="str">'Fare'</span>].median()  <span class="cm"># 14.45</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🔁 1.3 — Mode (Most Frequent Value) <span class="tag tag-purple">FOR CATEGORIES</span></div>
+    <p>The value that appears most often. Only measure of central tendency that works on <strong style="color:var(--accent2)">categorical</strong> data too.</p>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        <strong>Titanic Example:</strong><br>
+        Mode of Pclass = 3 (most passengers traveled 3rd class)<br>
+        Mode of Embarked = S (Southampton — most boarded there)
+      </div>
+    </div>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Pclass'</span>].mode()[<span class="num">0</span>]     <span class="cm"># 3</span>
+df[<span class="str">'Embarked'</span>].mode()[<span class="num">0</span>]   <span class="cm"># 'S'</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">⚖️ 1.4 — Mean vs Median vs Mode: When to Trust Which <span class="tag tag-purple">CRITICAL</span></div>
+    <table>
+      <tr><th>Situation</th><th>Best Measure</th><th>Why</th></tr>
+      <tr><td>Symmetric, no outliers</td><td style="color:var(--accent)">Mean</td><td>Uses every value, most precise</td></tr>
+      <tr><td>Skewed / has outliers</td><td style="color:var(--accent3)">Median</td><td>Ignores extreme values</td></tr>
+      <tr><td>Categorical data</td><td style="color:var(--accent2)">Mode</td><td>Mean/median don't apply to categories</td></tr>
+      <tr><td>Reporting income, price, real-estate</td><td style="color:var(--accent3)">Median</td><td>These are almost always right-skewed</td></tr>
+    </table>
+
+    <div class="callout callout-yellow">
+      <div class="callout-icon">🧠</div>
+      <div><strong>Quick diagnostic:</strong> Mean ≈ Median ≈ Mode → roughly symmetric. Mean &gt; Median → right-skewed (like Fare). Mean &lt; Median → left-skewed.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D2 — DISPERSION ══════════════ -->
+<section class="section" id="d-dispersion">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#0a2a1e;color:var(--accent3)">2</div>
+    <div>
+      <div class="section-title" style="color:var(--accent3)">Measures of Dispersion (Spread)</div>
+      <div class="section-sub">Two datasets can have the same mean but look completely different</div>
+    </div>
+  </div>
+
+  <div class="callout callout-green reveal">
+    <div class="callout-icon">🎯</div>
+    <div><strong>Why this matters:</strong> The mean alone can lie. Class A scores: 50,50,50,50,50 (mean=50). Class B scores: 0,25,50,75,100 (mean=50). Same mean, totally different spread. Dispersion tells the real story.</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">↔️ 2.1 — Range <span class="tag tag-green">SIMPLEST</span></div>
+    <div class="formula">Range = Max − Min</div>
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>Titanic Age range = 80 − 0.42 = <strong style="color:var(--accent3)">79.58 years</strong></div>
+    </div>
+    <div class="callout callout-red">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Weakness:</strong> Only uses 2 values (min & max) — extremely sensitive to a single outlier and ignores everything in between.</div>
+    </div>
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].max() - df[<span class="str">'Age'</span>].min()   <span class="cm"># 79.58</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📐 2.2 — Variance <span class="tag tag-green">FOUNDATION</span></div>
+    <p>The average of the squared distances of each point from the mean. Squaring removes negative signs and punishes larger deviations more.</p>
+    <div class="formula">Population: σ² = Σ(x − μ)² ÷ n &nbsp;&nbsp;|&nbsp;&nbsp; Sample: s² = Σ(x − x̄)² ÷ (n−1)</div>
+    <div class="callout callout-purple">
+      <div class="callout-icon">🧠</div>
+      <div><strong>Why n−1 for samples?</strong> Called "Bessel's correction" — using n−1 instead of n gives an unbiased estimate of the population variance from a sample. Pandas uses n−1 by default (<code>ddof=1</code>).</div>
+    </div>
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].var()   <span class="cm"># ≈ 169.0 (sample variance, ddof=1 by default)</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📊 2.3 — Standard Deviation <span class="tag tag-green">MOST USED</span></div>
+    <p>The square root of variance. Brings the units back to the original scale (e.g. "years" instead of "years squared") — this is why it's used far more often than variance in reporting.</p>
+    <div class="formula">σ (or s) = √Variance</div>
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        Std Dev of Age ≈ <strong style="color:var(--accent3)">13.0 years</strong> — most passengers' ages fall within ~13 years of the mean (29.7).<br>
+        Std Dev of Fare ≈ <strong style="color:var(--accent3)">49.7</strong> — huge relative to mean Fare (32.2), confirming Fare is highly spread out / skewed.
+      </div>
+    </div>
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].std()    <span class="cm"># ≈ 13.0</span>
+df[<span class="str">'Fare'</span>].std()   <span class="cm"># ≈ 49.7</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📦 2.4 — Interquartile Range (IQR) <span class="tag tag-green">ROBUST</span></div>
+    <p>The spread of the <strong style="color:var(--accent3)">middle 50%</strong> of the data. Unaffected by extreme outliers — the go-to spread measure for skewed data.</p>
+    <div class="formula">IQR = Q3 (75th percentile) − Q1 (25th percentile)</div>
+    <div class="code-block">
+<span class="lang">python</span>
+Q1 = df[<span class="str">'Fare'</span>].quantile(<span class="num">0.25</span>)   <span class="cm"># 7.91</span>
+Q3 = df[<span class="str">'Fare'</span>].quantile(<span class="num">0.75</span>)   <span class="cm"># 31.00</span>
+IQR = Q3 - Q1                              <span class="cm"># 23.09</span>
+<span class="fn">print</span>(<span class="str">f"IQR: <span class="kw">{</span>IQR:.2f<span class="kw">}</span>"</span>)</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📈 2.5 — Coefficient of Variation (CV) <span class="tag tag-green">GOOD TO KNOW</span></div>
+    <p>Standard deviation expressed as a % of the mean — lets you compare spread across variables with <strong style="color:var(--accent3)">different units or scales</strong>.</p>
+    <div class="formula">CV = (Std Dev ÷ Mean) × 100</div>
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        CV(Age) = 13.0 ÷ 29.7 × 100 = <strong>43.8%</strong><br>
+        CV(Fare) = 49.7 ÷ 32.2 × 100 = <strong>154.3%</strong><br>
+        Fare is relatively MUCH more spread out than Age — even though they're on completely different scales, CV lets you compare them fairly.
+      </div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📋 2.6 — Dispersion Summary Table <span class="tag tag-green">QUICK REFERENCE</span></div>
+    <table>
+      <tr><th>Measure</th><th>Sensitive to Outliers?</th><th>Units</th><th>Use When</th></tr>
+      <tr><td>Range</td><td style="color:var(--red)">Very</td><td>Same as data</td><td>Quick rough idea</td></tr>
+      <tr><td>Variance</td><td style="color:var(--red)">Yes</td><td>Squared</td><td>Math/statistics calculations</td></tr>
+      <tr><td>Std Dev</td><td style="color:var(--red)">Yes</td><td>Same as data</td><td>Reporting spread (most common)</td></tr>
+      <tr><td>IQR</td><td style="color:var(--accent3)">No</td><td>Same as data</td><td>Skewed data, outlier detection</td></tr>
+      <tr><td>CV</td><td style="color:var(--red)">Yes</td><td>%</td><td>Comparing spread across different units</td></tr>
+    </table>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D3 — SHAPE ══════════════ -->
+<section class="section" id="d-shape" style="background:linear-gradient(180deg,var(--bg) 0%, #1a0f0a 100%)">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#2a1a08;color:var(--accent4)">3</div>
+    <div>
+      <div class="section-title" style="color:var(--accent4)">Shape of the Distribution</div>
+      <div class="section-sub">Skewness and kurtosis — the "fingerprint" of your data's shape</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📐 3.1 — Skewness <span class="tag tag-orange">MUST KNOW</span></div>
+    <p>Measures the <strong style="color:var(--accent4)">asymmetry</strong> of a distribution — which side has the longer tail.</p>
+
+    <div class="wwwh">
+      <div class="wwwh-card">
+        <div class="wwwh-label">When</div>
+        <ul><li>Any continuous variable</li><li>Before choosing mean vs median</li><li>Before picking a statistical test later</li></ul>
+      </div>
+      <div class="wwwh-card">
+        <div class="wwwh-label">Where (DA)</div>
+        <ul><li>Age, Fare, Income, Price columns</li><li>Any column with a long tail</li></ul>
+      </div>
+      <div class="wwwh-card">
+        <div class="wwwh-label">Why</div>
+        <ul><li>Decides parametric vs non-parametric tests</li><li>Flags where mean is misleading</li></ul>
+      </div>
+      <div class="wwwh-card">
+        <div class="wwwh-label">How to Identify</div>
+        <ul><li>Histogram shape</li><li><code>df.skew()</code></li><li>Mean vs Median gap</li></ul>
+      </div>
+    </div>
+
+    <table>
+      <tr><th>Skewness</th><th>Shape</th><th>Tail Direction</th><th>Mean vs Median</th></tr>
+      <tr><td style="color:var(--accent3)">≈ 0</td><td>Symmetric</td><td>None</td><td>Mean ≈ Median</td></tr>
+      <tr><td style="color:var(--accent4)">&gt; 0 (positive)</td><td>Right-skewed</td><td>Long tail to the right</td><td>Mean &gt; Median</td></tr>
+      <tr><td style="color:var(--accent2)">&lt; 0 (negative)</td><td>Left-skewed</td><td>Long tail to the left</td><td>Mean &lt; Median</td></tr>
+    </table>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        <strong>Titanic:</strong><br>
+        Age skewness ≈ 0.53 → mildly right-skewed, close to normal.<br>
+        Fare skewness ≈ 4.78 → strongly right-skewed (a handful of very expensive tickets pull the tail out).
+      </div>
+    </div>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].skew()    <span class="cm"># 0.53  → mild right skew</span>
+df[<span class="str">'Fare'</span>].skew()   <span class="cm"># 4.78  → strong right skew</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">⛰️ 3.2 — Kurtosis <span class="tag tag-orange">IMPORTANT</span></div>
+    <p>Measures how <strong style="color:var(--accent4)">peaked or flat</strong> a distribution is, and how heavy its tails are, compared to a normal distribution.</p>
+    <div class="formula">Excess Kurtosis = Kurtosis − 3 &nbsp;(pandas/scipy report excess kurtosis by default)</div>
+
+    <table>
+      <tr><th>Excess Kurtosis</th><th>Type</th><th>Meaning</th></tr>
+      <tr><td style="color:var(--accent3)">≈ 0</td><td>Mesokurtic</td><td>Normal-like tails</td></tr>
+      <tr><td style="color:var(--accent4)">&gt; 0</td><td>Leptokurtic</td><td>Sharper peak, fatter tails, more outliers</td></tr>
+      <tr><td style="color:var(--accent2)">&lt; 0</td><td>Platykurtic</td><td>Flatter peak, thinner tails, fewer outliers</td></tr>
+    </table>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Fare'</span>].kurt()   <span class="cm"># ≈ 33.4 → extremely leptokurtic (heavy outlier tail)</span></div>
+
+    <div class="callout callout-yellow">
+      <div class="callout-icon">🧠</div>
+      <div><strong>Skewness vs Kurtosis:</strong> Skewness tells you which side is longer. Kurtosis tells you how extreme the tails/outliers are. Check both together for a full shape picture.</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🗂️ 3.3 — Frequency Distributions <span class="tag tag-orange">FOUNDATION</span></div>
+    <p>A table (or chart) showing how often each value or range of values occurs — the raw material behind every histogram.</p>
+    <div class="code-block">
+<span class="lang">python</span>
+<span class="cm"># Categorical frequency table</span>
+df[<span class="str">'Pclass'</span>].value_counts()
+
+<span class="cm"># Numerical → binned frequency table</span>
+pd.cut(df[<span class="str">'Age'</span>], bins=<span class="num">5</span>).value_counts().sort_index()
+
+<span class="cm"># As relative frequency (%)</span>
+df[<span class="str">'Pclass'</span>].value_counts(normalize=<span class="kw">True</span>) * <span class="num">100</span></div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D4 — PERCENTILES ══════════════ -->
+<section class="section" id="d-percentiles">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#0f1e3d;color:var(--accent)">4</div>
+    <div>
+      <div class="section-title">Percentiles & Quantiles</div>
+      <div class="section-sub">Where does a single value stand compared to everyone else?</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📊 4.1 — Percentiles <span class="tag tag-blue">CONCEPT</span></div>
+    <p>The Nth percentile is the value below which N% of the data falls.</p>
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        90th percentile of Fare ≈ 77.96 → 90% of passengers paid less than this; only the top 10% paid more.
+      </div>
+    </div>
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Fare'</span>].quantile(<span class="num">0.90</span>)   <span class="cm"># 77.96</span>
+df[<span class="str">'Fare'</span>].quantile([<span class="num">0.1</span>, <span class="num">0.25</span>, <span class="num">0.5</span>, <span class="num">0.75</span>, <span class="num">0.9</span>])</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🔢 4.2 — Quartiles <span class="tag tag-blue">SPECIAL CASE</span></div>
+    <p>Quartiles split the data into 4 equal parts — they're just the 25th, 50th, and 75th percentiles.</p>
+    <table>
+      <tr><th>Quartile</th><th>Percentile</th><th>Meaning</th></tr>
+      <tr><td>Q1</td><td>25th</td><td>25% of data is below this</td></tr>
+      <tr><td>Q2</td><td>50th</td><td>This IS the median</td></tr>
+      <tr><td>Q3</td><td>75th</td><td>75% of data is below this</td></tr>
+    </table>
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Age'</span>].describe()   <span class="cm"># includes 25%, 50%, 75% automatically</span></div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📍 4.3 — Z-Score (Standardized Value) <span class="tag tag-blue">CONNECTS TO NORMAL DIST</span></div>
+    <p>How many standard deviations a value is from the mean. Turns any value into a comparable, unit-free number.</p>
+    <div class="formula">z = (x − mean) ÷ std dev</div>
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>A passenger aged 68: z = (68 − 29.7) ÷ 13.0 ≈ <strong style="color:var(--accent3)">2.95</strong> → almost 3 standard deviations above average age — unusually old for the ship.</div>
+    </div>
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'age_zscore'</span>] = (df[<span class="str">'Age'</span>] - df[<span class="str">'Age'</span>].mean()) / df[<span class="str">'Age'</span>].std()</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D5 — FIVE NUMBER SUMMARY ══════════════ -->
+<section class="section" id="d-fivenum" style="background:linear-gradient(180deg,var(--bg) 0%, #0f0a1a 100%)">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#2a0f1e;color:var(--accent5)">5</div>
+    <div>
+      <div class="section-title" style="color:var(--accent5)">Five-Number Summary</div>
+      <div class="section-sub">The most compact honest snapshot of any numerical column</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📦 5.1 — The Five Numbers <span class="tag tag-pink">CORE</span></div>
+    <div class="formula">Min &nbsp;→&nbsp; Q1 &nbsp;→&nbsp; Median (Q2) &nbsp;→&nbsp; Q3 &nbsp;→&nbsp; Max</div>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>
+        Fare five-number summary: Min=0, Q1=7.91, Median=14.45, Q3=31.00, Max=512.33<br>
+        Notice how far Max is from Q3 — that gap is the visual signature of a right-skewed variable.
+      </div>
+    </div>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[<span class="str">'Fare'</span>].describe()[[<span class="str">'min'</span>,<span class="str">'25%'</span>,<span class="str">'50%'</span>,<span class="str">'75%'</span>,<span class="str">'max'</span>]]</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📊 5.2 — Reading a Boxplot <span class="tag tag-pink">VISUAL</span></div>
+    <p>A boxplot draws the five-number summary directly, plus flags outliers beyond the whiskers.</p>
+
+    <div class="boxplot-viz">
+      <div class="boxplot-track">
+        <div class="bp-line" style="left:2%; width:96%;"></div>
+        <div class="bp-cap" style="left:8%;"></div>
+        <div class="bp-cap" style="left:78%;"></div>
+        <div class="bp-box" style="left:22%; width:34%;"></div>
+        <div class="bp-median" style="left:32%;"></div>
+        <div class="bp-dot" style="left:88%;"></div>
+        <div class="bp-dot" style="left:94%;"></div>
+        <div class="bp-label" style="left:8%;">Min</div>
+        <div class="bp-label" style="left:22%;">Q1</div>
+        <div class="bp-label" style="left:32%;">Median</div>
+        <div class="bp-label" style="left:56%;">Q3</div>
+        <div class="bp-label" style="left:78%;">Max (whisker)</div>
+        <div class="bp-label" style="left:91%; color:var(--red);">Outliers</div>
+      </div>
+    </div>
+
+    <ul>
+      <li><strong style="color:var(--accent)">Box</strong> = IQR (Q1 to Q3), holds the middle 50% of data</li>
+      <li><strong style="color:var(--accent5)">Line inside box</strong> = Median</li>
+      <li><strong>Whiskers</strong> = extend to the last point within 1.5×IQR of the box</li>
+      <li><strong style="color:var(--red)">Dots beyond whiskers</strong> = flagged outliers</li>
+    </ul>
+
+    <div class="code-block">
+<span class="lang">python</span>
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+sns.boxplot(x=df[<span class="str">'Fare'</span>])
+plt.title(<span class="str">'Fare — Boxplot'</span>)
+plt.show()</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D6 — VISUALIZATION ══════════════ -->
+<section class="section" id="d-viz">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#1a1040;color:var(--accent2)">6</div>
+    <div>
+      <div class="section-title" style="color:var(--accent2)">Data Visualization for Descriptive Stats</div>
+      <div class="section-sub">Seeing your data is faster than reading numbers</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🗺️ 6.1 — Which Chart for Which Data? <span class="tag tag-purple">DECISION MAP</span></div>
+    <div class="decision-tree">
+<span class="dt-q">What are you trying to show?</span>
+│
+├── <span class="dt-q">Shape / spread of ONE numerical column?</span>
+│     ├── <span class="dt-a">Histogram</span>  <span class="dt-note">→ overall shape, skewness, modality</span>
+│     └── <span class="dt-a">Boxplot</span>     <span class="dt-note">→ median, IQR, outliers at a glance</span>
+│
+├── <span class="dt-q">Frequency of ONE categorical column?</span>
+│     └── <span class="dt-a">Bar Chart</span>   <span class="dt-note">→ Pclass counts, Embarked counts</span>
+│
+├── <span class="dt-q">Relationship between TWO numerical columns?</span>
+│     └── <span class="dt-a">Scatter Plot</span> <span class="dt-note">→ Age vs Fare</span>
+│
+├── <span class="dt-q">Numerical column ACROSS categorical groups?</span>
+│     └── <span class="dt-a">Grouped Boxplot / Violin Plot</span>  <span class="dt-note">→ Fare by Pclass</span>
+│
+└── <span class="dt-q">Relationships across MANY numerical columns?</span>
+      └── <span class="dt-a">Correlation Heatmap</span>  <span class="dt-note">→ sns.heatmap(df.corr())</span>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📊 6.2 — Histogram <span class="tag tag-purple">SHAPE</span></div>
+    <p>Groups continuous data into bins and shows how many values fall into each bin — the visual version of a frequency distribution.</p>
+    <div class="code-block">
+<span class="lang">python</span>
+sns.histplot(df[<span class="str">'Age'</span>], bins=<span class="num">20</span>, kde=<span class="kw">True</span>)
+plt.title(<span class="str">'Age Distribution'</span>)
+plt.show()</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📈 6.3 — Bar Chart <span class="tag tag-purple">CATEGORICAL</span></div>
+    <p>Shows counts or frequencies of categorical values as bars — height = frequency.</p>
+    <div class="code-block">
+<span class="lang">python</span>
+sns.countplot(x=<span class="str">'Pclass'</span>, data=df)
+plt.title(<span class="str">'Passenger Count by Class'</span>)
+plt.show()</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🔵 6.4 — Scatter Plot <span class="tag tag-purple">TWO NUMERICAL COLUMNS</span></div>
+    <p>Plots each row as a point on an X-Y plane — the fastest way to visually spot a relationship (or lack of one) before running correlation.</p>
+    <div class="code-block">
+<span class="lang">python</span>
+sns.scatterplot(x=<span class="str">'Age'</span>, y=<span class="str">'Fare'</span>, hue=<span class="str">'Survived'</span>, data=df)
+plt.title(<span class="str">'Age vs Fare'</span>)
+plt.show()</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🌈 6.5 — Correlation Heatmap <span class="tag tag-purple">MANY VARIABLES</span></div>
+    <p>Color-codes the correlation coefficient between every pair of numerical columns — instant overview of which variables move together.</p>
+    <div class="code-block">
+<span class="lang">python</span>
+sns.heatmap(df.corr(numeric_only=<span class="kw">True</span>), annot=<span class="kw">True</span>, cmap=<span class="str">'coolwarm'</span>)
+plt.title(<span class="str">'Correlation Heatmap'</span>)
+plt.show()</div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D7 — CORRELATION ══════════════ -->
+<section class="section" id="d-correlation" style="background:linear-gradient(180deg,var(--bg) 0%, #0d1428 100%)">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#0a2a1e;color:var(--accent3)">7</div>
+    <div>
+      <div class="section-title" style="color:var(--accent3)">Covariance & Correlation</div>
+      <div class="section-sub">Do two variables move together — and how strongly?</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🔗 7.1 — Covariance <span class="tag tag-green">FOUNDATION</span></div>
+    <p>Measures the direction two variables move together — positive means they rise together, negative means one rises as the other falls.</p>
+    <div class="formula">Cov(X,Y) = Σ[(x − x̄)(y − ȳ)] ÷ (n − 1)</div>
+    <div class="callout callout-red">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Weakness:</strong> Covariance's scale depends on the units of X and Y, so its raw number can't tell you HOW strong the relationship is — only correlation can, because it's standardized.</div>
+    </div>
+    <div class="code-block">
+<span class="lang">python</span>
+df[[<span class="str">'Age'</span>,<span class="str">'Fare'</span>]].cov()</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📉 7.2 — Correlation Coefficient (Descriptive) <span class="tag tag-green">STANDARDIZED</span></div>
+    <p>Covariance rescaled to always fall between -1 and +1, so it's comparable across any pair of variables. This is a purely descriptive number here — testing whether it's <em>statistically significant</em> belongs to inferential stats.</p>
+    <div class="formula">r = Cov(X,Y) ÷ (σx × σy)</div>
+
+    <table>
+      <tr><th>|r| value</th><th>Strength</th></tr>
+      <tr><td>0.7 – 1.0</td><td style="color:var(--accent3)">Strong</td></tr>
+      <tr><td>0.4 – 0.7</td><td style="color:var(--yellow)">Moderate</td></tr>
+      <tr><td>0.2 – 0.4</td><td style="color:var(--accent4)">Weak</td></tr>
+      <tr><td>0.0 – 0.2</td><td style="color:var(--muted)">Negligible</td></tr>
+    </table>
+
+    <div class="callout callout-blue">
+      <div class="callout-icon">🚢</div>
+      <div>Correlation of Fare & Survived ≈ 0.26 → weak-to-moderate positive relationship; passengers who paid more had a somewhat higher survival rate.</div>
+    </div>
+
+    <div class="code-block">
+<span class="lang">python</span>
+df[[<span class="str">'Age'</span>,<span class="str">'Fare'</span>,<span class="str">'Survived'</span>]].corr()   <span class="cm"># Pearson by default</span>
+df[[<span class="str">'Age'</span>,<span class="str">'Fare'</span>,<span class="str">'Survived'</span>]].corr(method=<span class="str">'spearman'</span>)</div>
+
+    <div class="callout callout-purple">
+      <div class="callout-icon">🧠</div>
+      <div><strong>Correlation ≠ Causation.</strong> A correlation number only describes the pattern in the data you have — it never proves one variable causes the other.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D8 — OUTLIERS ══════════════ -->
+<section class="section" id="d-outliers" style="background:linear-gradient(180deg,var(--bg) 0%, #1a0f0a 100%)">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#2a1a08;color:var(--accent4)">8</div>
+    <div>
+      <div class="section-title" style="color:var(--accent4)">Outlier Detection</div>
+      <div class="section-sub">Unusual values that can distort means, models, and conclusions</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📦 8.1 — IQR Method <span class="tag tag-orange">MOST COMMON</span></div>
+    <p>Flags any point that falls far outside the middle 50% of the data. Works well even when data is skewed.</p>
+    <div class="formula">Lower Bound = Q1 − 1.5×IQR &nbsp;&nbsp;|&nbsp;&nbsp; Upper Bound = Q3 + 1.5×IQR</div>
+    <div class="code-block">
+<span class="lang">python</span>
+Q1 = df[<span class="str">'Fare'</span>].quantile(<span class="num">0.25</span>)
+Q3 = df[<span class="str">'Fare'</span>].quantile(<span class="num">0.75</span>)
+IQR = Q3 - Q1
+
+lower = Q1 - <span class="num">1.5</span> * IQR
+upper = Q3 + <span class="num">1.5</span> * IQR
+
+outliers = df[(df[<span class="str">'Fare'</span>] < lower) | (df[<span class="str">'Fare'</span>] > upper)]
+<span class="fn">print</span>(<span class="str">f"Number of Fare outliers: <span class="kw">{</span><span class="fn">len</span>(outliers)<span class="kw">}</span>"</span>)</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📍 8.2 — Z-Score Method <span class="tag tag-orange">FOR NORMAL-ISH DATA</span></div>
+    <p>Flags any point more than a set number of standard deviations from the mean. Best used only on roughly normal data — skewed data will falsely flag too many/few points.</p>
+    <div class="formula">Outlier if |z| &gt; 3 &nbsp;(i.e. more than 3 std devs from mean)</div>
+    <div class="code-block">
+<span class="lang">python</span>
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> zscore
+
+df[<span class="str">'age_z'</span>] = zscore(df[<span class="str">'Age'</span>].dropna())
+outliers = df[df[<span class="str">'age_z'</span>].<span class="fn">abs</span>() > <span class="num">3</span>]
+<span class="fn">print</span>(<span class="str">f"Number of Age outliers: <span class="kw">{</span><span class="fn">len</span>(outliers)<span class="kw">}</span>"</span>)</div>
+
+    <div class="callout callout-red">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Don't use Z-score on skewed columns like Fare</strong> — its mean and std dev are already distorted by outliers, so the z-scores will be misleading. Use IQR instead.</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🗺️ 8.3 — Which Outlier Method to Use? <span class="tag tag-orange">DECISION MAP</span></div>
+    <div class="decision-tree">
+<span class="dt-q">Is the column roughly normal (skew between -0.5 and 0.5)?</span>
+│
+├── <span class="dt-y">YES</span> → <span class="dt-a">Z-Score method</span>  <span class="dt-note">(|z| > 3 = outlier)</span>
+│
+└── <span class="dt-n">NO (skewed, like Fare)</span> → <span class="dt-a">IQR method</span>  <span class="dt-note">(outside 1.5×IQR = outlier)</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════ D9 — CHEAT SHEET ══════════════ -->
+<section class="section" id="d-cheatsheet" style="background:linear-gradient(180deg,var(--bg) 0%,#050810 100%)">
+<div class="container">
+  <div class="section-header reveal">
+    <div class="section-num" style="background:#2a1a08;color:var(--accent4)">9</div>
+    <div>
+      <div class="section-title" style="color:var(--accent4)">Complete Cheat Sheet</div>
+      <div class="section-sub">Everything in one place — save this page</div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🗺️ All Measures at a Glance</div>
+    <div class="cheatsheet">
+      <div class="cs-row cs-head"><div>Measure</div><div>What it Tells You</div><div>Robust to Outliers?</div><div>Function</div></div>
+      <div class="cs-row"><div style="color:var(--accent)">Mean</div><div>Average / center</div><div style="color:var(--red)">No</div><div><code>.mean()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent3)">Median</div><div>Middle value</div><div style="color:var(--accent3)">Yes</div><div><code>.median()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent2)">Mode</div><div>Most frequent value</div><div style="color:var(--accent3)">Yes</div><div><code>.mode()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent4)">Range</div><div>Max − Min</div><div style="color:var(--red)">No</div><div><code>.max()-.min()</code></div></div>
+      <div class="cs-row"><div style="color:var(--yellow)">Variance</div><div>Avg squared deviation</div><div style="color:var(--red)">No</div><div><code>.var()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent5)">Std Dev</div><div>Typical distance from mean</div><div style="color:var(--red)">No</div><div><code>.std()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent3)">IQR</div><div>Spread of middle 50%</div><div style="color:var(--accent3)">Yes</div><div><code>Q3-Q1</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent)">Skewness</div><div>Asymmetry direction</div><div>—</div><div><code>.skew()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent2)">Kurtosis</div><div>Peakedness / tail weight</div><div>—</div><div><code>.kurt()</code></div></div>
+      <div class="cs-row"><div style="color:var(--accent4)">Correlation</div><div>How 2 variables move together</div><div style="color:var(--red)">No (Pearson)</div><div><code>.corr()</code></div></div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">📦 Complete Import Block <span class="tag tag-blue">COPY THIS</span></div>
+    <div class="code-block">
+<span class="lang">python</span>
+<span class="cm"># ── All imports for Descriptive Stats ────────────</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> zscore
+
+<span class="cm"># One-shot descriptive summary</span>
+df.describe()                          <span class="cm"># count, mean, std, min, 25/50/75%, max</span>
+df.describe(include=<span class="str">'object'</span>)        <span class="cm"># categorical: count, unique, top, freq</span>
+df.skew(numeric_only=<span class="kw">True</span>)
+df.kurt(numeric_only=<span class="kw">True</span>)
+df.corr(numeric_only=<span class="kw">True</span>)</div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card-title">🧠 Golden Rules Every DA Must Remember</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="callout callout-blue" style="margin:0"><div class="callout-icon">1️⃣</div><div><strong>Always check mean AND median together.</strong> A big gap between them is your first skewness alarm.</div></div>
+      <div class="callout callout-green" style="margin:0"><div class="callout-icon">2️⃣</div><div><strong>Std Dev only makes sense next to the mean.</strong> Report them together, never alone.</div></div>
+      <div class="callout callout-yellow" style="margin:0"><div class="callout-icon">3️⃣</div><div><strong>IQR beats Range</strong> for skewed real-world data — it ignores extreme values.</div></div>
+      <div class="callout callout-purple" style="margin:0"><div class="callout-icon">4️⃣</div><div><strong>Skewness &gt; 1 or &lt; -1</strong> → strongly skewed → use median-based / IQR-based methods, not mean-based ones.</div></div>
+      <div class="callout callout-red" style="margin:0"><div class="callout-icon">5️⃣</div><div><strong>Describe before you visualize, visualize before you model.</strong> Numbers first, then charts, then ML.</div></div>
+      <div class="callout callout-blue" style="margin:0"><div class="callout-icon">6️⃣</div><div><strong>Descriptive stats never prove significance.</strong> That's the job of inferential stats — switch tabs above once your data is understood.</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;border-top:1px solid var(--border)">
+  📈 DA Notes — Descriptive Statistics &nbsp;|&nbsp; Built for your Titanic project and beyond
+</footer>
+
+</div>
+<!-- ============ END DESCRIPTIVE ROOT ============ -->
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- ============  INFERENTIAL STATISTICS ROOT  ============ -->
+<!-- ==========  (UNCHANGED FROM ORIGINAL FILE)  =========== -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div id="inferential-root" class="stat-root" style="display:none;">
 
 <!-- HERO -->
 <section class="hero">
@@ -1582,30 +2474,79 @@ mean, (low, high) = confidence_interval(df[df[<span class="str">'Survived'</span
   📊 DA Notes — Probability & Inferential Statistics &nbsp;|&nbsp; Built for your Titanic project and beyond
 </footer>
 
+</div>
+<!-- ============ END INFERENTIAL ROOT ============ -->
+
+
 <script>
-// ── Progress bar ──────────────────────────────────
-window.addEventListener('scroll', () => {
-  const h = document.documentElement;
-  const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-  document.getElementById('progress-bar').style.width = pct + '%';
-});
+// ═══════════════════════════════════════════════════
+// TOGGLE LOGIC (new)
+// ═══════════════════════════════════════════════════
+var currentMode = 'desc';
 
-// ── Reveal on scroll ──────────────────────────────
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+function switchStatMode(mode) {
+  currentMode = mode;
+  var descRoot = document.getElementById('descriptive-root');
+  var infRoot  = document.getElementById('inferential-root');
+  var btnDesc  = document.getElementById('btn-desc');
+  var btnInf   = document.getElementById('btn-inf');
+
+  if (mode === 'desc') {
+    descRoot.style.display = 'block';
+    infRoot.style.display = 'none';
+    btnDesc.classList.add('is-active-desc');
+    btnInf.classList.remove('is-active-inf');
+  } else {
+    descRoot.style.display = 'none';
+    infRoot.style.display = 'block';
+    btnInf.classList.add('is-active-inf');
+    btnDesc.classList.remove('is-active-desc');
+  }
+
+  window.scrollTo(0, 0);
+  refreshRevealObserver();
+  updateProgressBar();
+}
+
+// ── Progress bar (scoped to visible root) ─────────
+function updateProgressBar() {
+  var h = document.documentElement;
+  var pct = (h.scrollTop / (h.scrollHeight - h.clientHeight || 1)) * 100;
+  var bar = document.getElementById('progress-bar');
+  if (bar) bar.style.width = (isFinite(pct) ? pct : 0) + '%';
+}
+window.addEventListener('scroll', updateProgressBar);
+
+// ── Reveal on scroll (works for both roots since class-based) ──
+var revealObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ── Active nav ────────────────────────────────────
-const sections = document.querySelectorAll('section[id]');
-const navItems = document.querySelectorAll('.nav-item');
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 120) current = s.id; });
-  navItems.forEach(n => {
+function refreshRevealObserver() {
+  var activeRoot = currentMode === 'desc'
+    ? document.getElementById('descriptive-root')
+    : document.getElementById('inferential-root');
+  activeRoot.querySelectorAll('.reveal').forEach(function(el) { revealObserver.observe(el); });
+}
+refreshRevealObserver();
+
+// ── Active nav highlighting (scoped to visible root) ──
+window.addEventListener('scroll', function() {
+  var activeRoot = currentMode === 'desc'
+    ? document.getElementById('descriptive-root')
+    : document.getElementById('inferential-root');
+  var sections = activeRoot.querySelectorAll('section[id]');
+  var navItems = activeRoot.querySelectorAll('.nav-item');
+  var current = '';
+  sections.forEach(function(s) { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navItems.forEach(function(n) {
     n.classList.toggle('active', n.getAttribute('href') === '#' + current);
   });
 });
+
+// ═══════════════════════════════════════════════════
+// INFERENTIAL CANVAS DRAWING (unchanged from original)
+// ═══════════════════════════════════════════════════
 
 // ── Normal distribution canvas ────────────────────
 (function drawNormal() {
